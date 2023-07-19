@@ -1,0 +1,4 @@
+commented-configparser==1.0.0
+psutil==5.9.5
+pycairo==1.24.0
+PyGObject==3.44.1
