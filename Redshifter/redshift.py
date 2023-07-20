@@ -32,11 +32,11 @@ class RedshiftConfig:
         os.rename(self.path + "_temp", self.path)
         print("file saved")
 
-    def get_val(self, name):
-        return self.config["redshift"][name]
+    def get_val(self, name, section="redshift"):
+        return self.config[section][name]
 
-    def set_val(self, name, new_value):
-        self.config["redshift"][name] = new_value
+    def set_val(self, name, new_value, section="redshift"):
+        self.config[section][name] = new_value
 
 
 class ProcessHandler(GObject.GObject):

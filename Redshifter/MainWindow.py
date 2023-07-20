@@ -7,7 +7,7 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GdkPixbuf, Gdk, GMenu
 from Redshifter.redshift import RedshiftConfig, ProcessHandler
 import gettext
-from Redshifter.form import validate_color_temp
+from Redshifter import input
 from Redshifter import config
 
 gettext.bindtextdomain(config.GETTEXT_PACKAGE, config.localedir)
@@ -39,6 +39,11 @@ class MainWindow(object):
         config = RedshiftConfig()
         self.tree.get_object("field_day_temp").set_text(config.get_val("temp-day"))
         self.tree.get_object("field_night_temp").set_text(config.get_val("temp-night"))
+        self.tree.get_object("field_day_bright").set_text(config.get_val("brightness-day"))
+        self.tree.get_object("field_night_bright").set_text(config.get_val("brightness-night"))
+        self.tree.get_object("field_lat").set_text(config.get_val("lat", "manual"))
+        self.tree.get_object("field_lon").set_text(config.get_val("lon", "manual"))
+        self.tree.get_object("field_transitions").set_active(config.get_val("transition") == '1')
 
     def init_restart_btn(self):
         p = ProcessHandler()
@@ -49,12 +54,32 @@ class MainWindow(object):
 
     def on_save_clicked(self, button):
         config = RedshiftConfig()
-        temp = self.tree.get_object("field_day_temp").get_text()
-        temp = validate_color_temp(temp)
-        config.set_val("temp-day", temp)
-        temp = self.tree.get_object("field_night_temp").get_text()
-        temp = validate_color_temp(temp)
-        config.set_val("temp-night", temp)
+        # day temp
+        value = self.tree.get_object("field_day_temp").get_text()
+        value = input.validate_color_temp(value)
+        config.set_val("temp-day", value)
+        # night temp
+        value = self.tree.get_object("field_night_temp").get_text()
+        value = input.validate_color_temp(value)
+        config.set_val("temp-night", value)
+        # day bright
+        value = self.tree.get_object("field_day_bright").get_text()
+        value = input.validate_brightness(value)
+        config.set_val("brightness-day", value)
+        # night bright
+        value = self.tree.get_object("field_night_bright").get_text()
+        value = input.validate_brightness(value)
+        config.set_val("brightness-night", value)
+        # transitions
+        value = self.tree.get_object("field_transitions").get_active()
+        config.set_val("transition", '1' if value else '0')
+        # lat
+        value = self.tree.get_object("field_lat").get_text()
+        config.set_val("lat", value, "manual")
+        # lon
+        value = self.tree.get_object("field_lon").get_text()
+        config.set_val("lon", value, "manual")
+
         config.write()
         self.init()
 
